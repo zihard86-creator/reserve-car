@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORM ENG 법인차량 예약 시스템</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --background-color: #f4f7f6;
+            --text-color: #333;
+            --error-color: #dc3545;
+            --car1-color: #007bff;
+            --car2-color: #28a745;
+            --car3-color: #17a2b8;
+            --car4-color: #fd7e14;
+            --download-color: #198754;
+        }
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* --- 헤더(타이틀 및 링크) 영역 스타일 --- */
+        .header-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .header-container h1 {
+            margin: 0;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        /* 홈 버튼 스타일 추가 */
+        .home-link {
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+            color: #555;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .home-link:hover {
+            background-color: #e2e6ea;
+            color: #333;
+        }
+        .room-link {
+            position: absolute;
+            right: 0;
+            font-size: 12px;
+            color: #555;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .room-link:hover {
+            background-color: #e2e6ea;
+            color: #333;
+        }
+        
+        /* 달력(Calendar) 스타일 */
+        .calendar-wrapper {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #fdfdfd;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .calendar-header h2 { margin: 0; font-size: 18px; color: #333; }
+        .calendar-header button {
+            width: 32px; padding: 5px; background-color: #f8f9fa; border: 1px solid #ccc;
+            color: #333; border-radius: 4px; font-weight: bold; cursor: pointer;
+        }
+        .calendar-header button:hover { background-color: #e2e6ea; }
+        
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+        .cal-day-header { font-weight: bold; padding: 6px 0; background-color: #f0f4f8; border-radius: 4px; font-size: 13px; }
+        .cal-day-header:first-child { color: var(--error-color); } 
+        .cal-day-header:last-child { color: var(--primary-color); } 
+        
+        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 4px; }
+        .cal-cell {
+            min-height: 55px; border: 1px solid #eaeaea; border-radius: 4px; padding: 4px;
+            cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column;
+            align-items: center; background-color: #fff;
+        }
+        .cal-cell.empty { background-color: transparent; border-color: transparent; cursor: default; }
+        .cal-cell:not(.empty):hover { background-color: #f1f7fd; border-color: #c6dfeb; }
+        .cal-cell.selected { background-color: #e9f2fb; border: 2px solid var(--primary-color); }
+        
+        /* --- 변경됨: 달력 오늘 날짜 하이라이트 스타일 --- */
+        .cal-date-text { 
+            font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #555; 
+            width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%;
+        }
+        .cal-cell.today .cal-date-text {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .cal-badges { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
+        .cal-badge { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .badge-car1 { background-color: var(--car1-color); }
+        .badge-car2 { background-color: var(--car2-color); }
+        .badge-car3 { background-color: var(--car3-color); }
+        .badge-car4 { background-color: var(--car4-color); }
+
+        /* 타임라인 스타일 */
+        .reservation-list { margin-top: 0; margin-bottom: 40px; }
+        .timeline-container { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 20px 15px; margin-top: 15px; overflow-x: auto; }
+        .timeline-row { display: flex; align-items: center; margin-bottom: 15px; min-width: 800px; }
+        .timeline-row:last-child { margin-bottom: 0; }
+        .vehicle-label-cell { width: 170px; font-weight: bold; font-size: 14px; color: #444; padding-right: 10px; flex-shrink: 0; }
+        .timeline-track-cell { flex: 1; position: relative; height: 44px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; box-sizing: border-box; }
+        
+        .axis-row { margin-bottom: 8px; }
+        .axis-row .vehicle-label-cell { font-size: 12px; color: #777; }
+        .axis-track { display: flex; height: auto; background: none; border: none; }
+        .axis-track span { flex: 1; text-align: center; font-size: 11px; color: #666; font-weight: bold; }
+
+        .bg-grid { display: flex; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        .bg-grid span { flex: 1; border-right: 1px dashed #e9ecef; height: 100%; box-sizing: border-box; }
+        .bg-grid span:last-child { border-right: none; }
+
+        .blocks-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+        .timeline-block {
+            position: absolute; top: 5px; bottom: 5px; background-color: var(--primary-color);
+            color: white; border-radius: 4px; font-size: 12px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            text-overflow: ellipsis; white-space: nowrap; padding: 0 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); box-sizing: border-box; cursor: pointer; transition: all 0.2s;
+        }
+        .timeline-block:hover { filter: brightness(1.2); transform: scaleY(1.1); z-index: 10; border: 1px solid #003d82; }
+
+        /* 폼 요소 스타일 */
+        .form-group { margin-bottom: 20px; }
+        label.section-label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="text"], input[type="password"], input[type="date"], input[type="time"], input[type="number"], input[type="month"] {
+            padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;
+        }
+        input[type="text"] { width: 100%; }
+        
+        .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .radio-group input[type="radio"] { display: none; }
+        .radio-btn {
+            flex: 1; min-width: 120px; text-align: center; padding: 12px;
+            border: 1px solid #ccc; border-radius: 4px; cursor: pointer;
+            background-color: #f8f9fa; transition: all 0.2s ease-in-out; font-size: 15px; user-select: none;
+        }
+        .radio-btn:hover { background-color: #e9ecef; }
+        .radio-group input[type="radio"]:checked + .radio-btn {
+            background-color: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: bold;
+        }
+
+        .flex-group { display: flex; align-items: center; gap: 10px; }
+        .flex-group input[type="date"], .flex-group input[type="time"] { flex: 1; }
+        .flex-group input[type="number"] { width: 80px; text-align: right; }
+        .flex-group .name-input { flex: 1; }
+        .flex-group .pw-input { width: 140px; }
+        
+        /* 종일 체크박스 라벨 래퍼 */
+        .allday-label {
+            white-space: nowrap; 
+            font-size: 14px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            color: var(--primary-color);
+        }
+
+        .error-banner {
+            display: none; background-color: #f8d7da; color: var(--error-color);
+            border: 1px solid #f5c6cb; padding: 12px; border-radius: 4px;
+            margin-bottom: 15px; font-weight: bold; font-size: 14px; text-align: center; line-height: 1.5;
+        }
+
+        button.submit-btn {
+            width: 100%; padding: 15px; background-color: var(--primary-color);
+            color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold;
+        }
+        button.submit-btn:hover { background-color: #004494; }
+
+        /* 월간 운행일지 다운로드 영역 스타일 */
+        .download-section {
+            margin-top: 50px;
+            padding: 25px;
+            background-color: #fdfdfd;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .download-section h2 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #333; text-align: left; }
+        .download-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .dl-btn {
+            background-color: var(--download-color); color: white; border: none;
+            padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s;
+        }
+        .dl-btn:hover { background-color: #146c43; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-container">
+        <a href="#" class="home-link">&lt; 홈</a>
+        <h1>FORM ENG 법인차량 예약</h1>
+        <a href="https://form-booking.netlify.app/" target="_blank" class="room-link">회의실 예약 바로가기 &gt;</a>
+    </div>
+
+    <div class="calendar-wrapper">
+        <div class="calendar-header">
+            <button type="button" id="prevMonthBtn">&lt;</button>
+            <h2 id="calendarMonthText">2026년 6월</h2>
+            <button type="button" id="nextMonthBtn">&gt;</button>
+        </div>
+        <div style="text-align: right; margin-bottom: 8px; font-size: 11px; color: #666;">
+            <span class="cal-badge badge-car1"></span> 트레일블레이저
+            <span class="cal-badge badge-car2" style="margin-left:8px;"></span> 1톤(6891)
+            <span class="cal-badge badge-car3" style="margin-left:8px;"></span> 1톤(7539)
+            <span class="cal-badge badge-car4" style="margin-left:8px;"></span> 3.5톤
+        </div>
+        <div class="calendar-grid">
+            <div class="cal-day-header">일</div>
+            <div class="cal-day-header">월</div>
+            <div class="cal-day-header">화</div>
+            <div class="cal-day-header">수</div>
+            <div class="cal-day-header">목</div>
+            <div class="cal-day-header">금</div>
+            <div class="cal-day-header">토</div>
+        </div>
+        <div class="calendar-days" id="calendarDays">
+            </div>
+    </div>
+    
+    <div class="reservation-list">
+        <h2 id="timelineTitle">선택일자 24시간 예약 현황</h2>
+        <p style="text-align: center; color: #666; font-size: 14px; margin-top: -10px; margin-bottom: 20px;">
+            ※ 위 달력에서 날짜를 클릭하시면 해당 일자의 타임라인이 표시됩니다.<br>
+            ※ 예약 블록을 <b>클릭</b>하시면 비밀번호 확인 후 취소할 수 있습니다.
+        </p>
+        
+        <div class="timeline-container">
+            <div class="timeline-row axis-row">
+                <div class="vehicle-label-cell">차량 / 시간축</div>
+                <div class="timeline-track-cell axis-track">
+                    <span>00</span><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
+                    <span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span>
+                    <span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span>
+                    <span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span>
+                </div>
+            </div>
+            
+            <div class="timeline-row">
+                <div class="vehicle-label-cell">트레일블레이저(1165)</div>
+                <div class="timeline-track-cell">
+                    <div class="bg-grid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="blocks-overlay" id="overlay-car1"></div>
+                </div>
+            </div>
+            <div class="timeline-row">
+                <div class="vehicle-label-cell">1톤(6891)</div>
+                <div class="timeline-track-cell">
+                    <div class="bg-grid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="blocks-overlay" id="overlay-car2"></div>
+                </div>
+            </div>
+            <div class="timeline-row">
+                <div class="vehicle-label-cell">1톤(7539)</div>
+                <div class="timeline-track-cell">
+                    <div class="bg-grid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="blocks-overlay" id="overlay-car3"></div>
+                </div>
+            </div>
+            <div class="timeline-row">
+                <div class="vehicle-label-cell">3.5톤</div>
+                <div class="timeline-track-cell">
+                    <div class="bg-grid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <div class="blocks-overlay" id="overlay-car4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr style="border: 0; height: 1px; background: #ddd; margin: 40px 0;">
+    
+    <h2>새로운 예약 등록</h2>
+    <form id="reservationForm">
+        <div class="form-group">
+            <label class="section-label">예약자 성명 및 취소 비밀번호</label>
+            <div class="flex-group">
+                <input type="text" id="userName" class="name-input" placeholder="이름을 입력하세요" required>
+                <input type="password" id="password" class="pw-input" placeholder="비밀번호 4자리" maxlength="4" pattern="\d{4}" title="숫자 4자리를 입력하세요" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="section-label" for="destination">목적지</label>
+            <input type="text" id="destination" placeholder="예: 화성 공장, 서울 본사 등" required>
+        </div>
+
+        <div class="form-group">
+            <label class="section-label" for="purpose">사용 목적</label>
+            <input type="text" id="purpose" placeholder="예: 부품 수령, 현장 미팅 등" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="section-label">차량 선택</label>
+            <div class="radio-group" id="vehicleRadioGroup">
+                <input type="radio" id="car1" name="vehicle" value="트레일블레이저(1165)" required>
+                <label for="car1" class="radio-btn">트레일블레이저<br>(1165)</label>
+                <input type="radio" id="car2" name="vehicle" value="1톤(6891)">
+                <label for="car2" class="radio-btn">1톤<br>(6891)</label>
+                <input type="radio" id="car3" name="vehicle" value="1톤(7539)">
+                <label for="car3" class="radio-btn">1톤<br>(7539)</label>
+                <input type="radio" id="car4" name="vehicle" value="3.5톤">
+                <label for="car4" class="radio-btn">3.5톤<br>&nbsp;</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="section-label">이용 시작 일시</label>
+            <div class="flex-group">
+                <input type="date" id="startDate" required title="시작 날짜">
+                <input type="time" id="startTime" required title="시작 시간">
+                <label class="allday-label">
+                    <input type="checkbox" id="allDayCheck" style="margin: 0; vertical-align: middle;"> 종일
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="section-label">반납 일시</label>
+            <div class="flex-group">
+                <input type="date" id="endDate" required title="반납 날짜">
+                <input type="time" id="endTime" required title="반납 시간">
+                <span class="allday-label" style="visibility: hidden;">
+                    <input type="checkbox" style="margin: 0; vertical-align: middle;"> 종일
+                </span>
+            </div>
+        </div>
+
+        <div id="errorBanner" class="error-banner"></div>
+
+        <button type="submit" class="submit-btn">예약 등록하기</button>
+    </form>
+
+    <div class="download-section">
+        <h2>📊 월간 운행일지 다운로드 (Excel/CSV)</h2>
+        <div class="download-controls">
+            <input type="month" id="downloadMonth" title="다운로드할 월 선택" required>
+            <button type="button" class="dl-btn" data-car="트레일블레이저(1165)">트레일블레이저(1165)</button>
+            <button type="button" class="dl-btn" data-car="1톤(6891)">1톤(6891)</button>
+            <button type="button" class="dl-btn" data-car="1톤(7539)">1톤(7539)</button>
+            <button type="button" class="dl-btn" data-car="3.5톤">3.5톤</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBRwg3k5usuMkBXH9LB6T-9Uuw9ZU1TBMs",
+        authDomain: "formeng-7c4b3.firebaseapp.com",
+        databaseURL: "https://formeng-7c4b3-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "formeng-7c4b3",
+        storageBucket: "formeng-7c4b3.firebasestorage.app",
+        messagingSenderId: "745402830490",
+        appId: "1:745402830490:web:dcf71f104ffdc6bdb8d923"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById('reservationForm');
+    const errorBanner = document.getElementById('errorBanner');
+    
+    const startDateInput = document.getElementById('startDate');
+    const startTimeInput = document.getElementById('startTime');
+    const endDateInput = document.getElementById('endDate');
+    const endTimeInput = document.getElementById('endTime');
+    const allDayCheck = document.getElementById('allDayCheck');
+    
+    const vehicleRadioGroup = document.getElementById('vehicleRadioGroup');
+    const downloadMonthInput = document.getElementById('downloadMonth');
+    
+    let allReservations = []; 
+    let currentCalDate = new Date(); 
+
+    window.cancelReservation = async function(id, userName, correctPassword) {
+        const inputPw = prompt(`[${userName}]님의 예약을 취소합니다.\n예약 시 설정한 비밀번호 4자리를 입력해주세요.`);
+        if (inputPw === null || inputPw.trim() === "") return;
+
+        if (inputPw === correctPassword) {
+            if (confirm(`비밀번호가 일치합니다.\n정말 예약을 취소하시겠습니까?`)) {
+                try {
+                    await deleteDoc(doc(db, "reservations", id));
+                    alert("예약이 정상적으로 취소되었습니다.");
+                } catch (error) {
+                    console.error("Error removing document: ", error);
+                    alert("예약 취소 중 오류가 발생했습니다.");
+                }
+            }
+        } else {
+            alert("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    function getCombinedStartString() {
+        if (!startDateInput.value || !startTimeInput.value) return null;
+        return `${startDateInput.value}T${startTimeInput.value}`;
+    }
+    
+    function getCombinedEndString() {
+        if (!endDateInput.value || !endTimeInput.value) return null;
+        return `${endDateInput.value}T${endTimeInput.value}`;
+    }
+
+    function setDefaultTimes() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        startDateInput.value = `${year}-${month}-${day}`;
+        
+        downloadMonthInput.value = `${year}-${month}`;
+        
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        startTimeInput.value = `${hours}:${minutes}`;
+        
+        const endNow = new Date(now.getTime() + 60 * 60 * 1000);
+        const endYear = endNow.getFullYear();
+        const endMonth = String(endNow.getMonth() + 1).padStart(2, '0');
+        const endDay = String(endNow.getDate()).padStart(2, '0');
+        endDateInput.value = `${endYear}-${endMonth}-${endDay}`;
+        
+        const endHoursStr = String(endNow.getHours()).padStart(2, '0');
+        const endMinutesStr = String(endNow.getMinutes()).padStart(2, '0');
+        endTimeInput.value = `${endHoursStr}:${endMinutesStr}`;
+        
+        currentCalDate = new Date(); 
+
+        if(allDayCheck.checked) {
+            startTimeInput.value = '00:00';
+            endTimeInput.value = '23:59';
+        }
+
+        hideError(); 
+        renderCalendar();
+    }
+
+    allDayCheck.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            startTimeInput.value = '00:00';
+            endTimeInput.value = '23:59';
+            startTimeInput.readOnly = true;
+            endTimeInput.readOnly = true;
+            startTimeInput.style.backgroundColor = '#e9ecef';
+            endTimeInput.style.backgroundColor = '#e9ecef';
+        } else {
+            startTimeInput.readOnly = false;
+            endTimeInput.readOnly = false;
+            startTimeInput.style.backgroundColor = '';
+            endTimeInput.style.backgroundColor = '';
+            
+            const now = new Date();
+            startTimeInput.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const endNow = new Date(now.getTime() + 60 * 60 * 1000);
+            endTimeInput.value = `${String(endNow.getHours()).padStart(2, '0')}:${String(endNow.getMinutes()).padStart(2, '0')}`;
+        }
+        hideError();
+    });
+
+    function showError(message) {
+        errorBanner.innerText = message;
+        errorBanner.style.display = 'block';
+    }
+    function hideError() {
+        errorBanner.style.display = 'none';
+        errorBanner.innerText = '';
+    }
+
+    function renderCalendar() {
+        const year = currentCalDate.getFullYear();
+        const month = currentCalDate.getMonth();
+        
+        document.getElementById('calendarMonthText').innerText = `${year}년 ${month + 1}월`;
+        
+        const firstDay = new Date(year, month, 1).getDay(); 
+        const lastDate = new Date(year, month + 1, 0).getDate(); 
+        
+        const calendarDays = document.getElementById('calendarDays');
+        calendarDays.innerHTML = '';
+        
+        const selectedDateStr = startDateInput.value; 
+        
+        // --- 변경됨: 실제 '오늘' 날짜를 확인하기 위한 로직 ---
+        const todayObj = new Date();
+        const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+
+        for(let i = 0; i < firstDay; i++) {
+            calendarDays.innerHTML += `<div class="cal-cell empty"></div>`;
+        }
+
+        for(let i = 1; i <= lastDate; i++) {
+            const cellDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+            const isSelected = (selectedDateStr === cellDateStr) ? 'selected' : '';
+            const isToday = (todayStr === cellDateStr) ? 'today' : ''; // 오늘 여부 확인
+            
+            let cellHtml = `<div class="cal-cell ${isSelected} ${isToday}" data-date="${cellDateStr}">
+                                <div class="cal-date-text">${i}</div>
+                                <div class="cal-badges">`;
+            
+            const cellStart = new Date(`${cellDateStr}T00:00:00`).getTime();
+            const cellEnd = new Date(`${cellDateStr}T23:59:59`).getTime();
+            
+            const bookedVehicles = new Set();
+            allReservations.forEach(res => {
+                const rStart = new Date(res.startTime).getTime();
+                const rEnd = new Date(res.endTime).getTime();
+                if (rStart <= cellEnd && rEnd >= cellStart) {
+                    bookedVehicles.add(res.vehicle);
+                }
+            });
+
+            bookedVehicles.forEach(v => {
+                let badgeClass = '';
+                if(v.includes('트레일')) badgeClass = 'badge-car1';
+                else if(v.includes('6891')) badgeClass = 'badge-car2';
+                else if(v.includes('7539')) badgeClass = 'badge-car3';
+                else if(v.includes('3.5톤')) badgeClass = 'badge-car4';
+                
+                cellHtml += `<span class="cal-badge ${badgeClass}" title="${v}"></span>`;
+            });
+
+            cellHtml += `</div></div>`;
+            calendarDays.innerHTML += cellHtml;
+        }
+
+        document.querySelectorAll('.cal-cell:not(.empty)').forEach(cell => {
+            cell.addEventListener('click', function() {
+                const clickedDate = this.getAttribute('data-date');
+                startDateInput.value = clickedDate; 
+                
+                hideError();
+                renderTimeline(); 
+                renderCalendar(); 
+            });
+        });
+    }
+
+    document.getElementById('prevMonthBtn').addEventListener('click', () => {
+        currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+        renderCalendar();
+    });
+    document.getElementById('nextMonthBtn').addEventListener('click', () => {
+        currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+        renderCalendar();
+    });
+    
+    function renderTimeline() {
+        const selectedDateStr = startDateInput.value; 
+        if (!selectedDateStr) return;
+
+        document.getElementById('timelineTitle').innerText = `[${selectedDateStr}] 24시간 예약 현황`;
+
+        const overlays = {
+            '트레일블레이저(1165)': document.getElementById('overlay-car1'),
+            '1톤(6891)': document.getElementById('overlay-car2'),
+            '1톤(7539)': document.getElementById('overlay-car3'),
+            '3.5톤': document.getElementById('overlay-car4')
+        };
+        Object.values(overlays).forEach(el => { if(el) el.innerHTML = ''; });
+
+        const dayStart = new Date(`${selectedDateStr}T00:00:00`);
+        const dayEnd = new Date(`${selectedDateStr}T23:59:59`);
+        const dayTotalMs = 24 * 60 * 60 * 1000;
+
+        allReservations.forEach(res => {
+            const resStart = new Date(res.startTime);
+            const resEnd = new Date(res.endTime);
+
+            if (resStart <= dayEnd && resEnd >= dayStart) {
+                const overlay = overlays[res.vehicle];
+                if (!overlay) return;
+
+                const visibleStart = Math.max(resStart.getTime(), dayStart.getTime());
+                const visibleEnd = Math.min(resEnd.getTime(), dayEnd.getTime());
+
+                const leftPercent = ((visibleStart - dayStart.getTime()) / dayTotalMs) * 100;
+                const widthPercent = ((visibleEnd - visibleStart) / dayTotalMs) * 100;
+
+                const block = document.createElement('div');
+                block.className = 'timeline-block';
+                block.style.left = `${leftPercent}%`;
+                block.style.width = `${widthPercent}%`;
+                block.innerText = res.userName; 
+
+                const sText = res.startTime.replace('T', ' ');
+                const eText = res.endTime.replace('T', ' ');
+                block.title = `[클릭하여 예약 취소]\n예약자: ${res.userName}\n차량: ${res.vehicle}\n기간: ${sText} ~ ${eText}`;
+
+                block.addEventListener('click', () => {
+                    window.cancelReservation(res.id, res.userName, res.password);
+                });
+
+                overlay.appendChild(block);
+            }
+        });
+    }
+
+    startDateInput.addEventListener('input', () => { 
+        hideError(); 
+        const inputDate = new Date(startDateInput.value);
+        if(!isNaN(inputDate)) {
+            currentCalDate = new Date(inputDate);
+        }
+        renderCalendar(); 
+        renderTimeline(); 
+    });
+    
+    startTimeInput.addEventListener('input', () => { hideError(); });
+    endDateInput.addEventListener('input', () => { hideError(); });
+    endTimeInput.addEventListener('input', () => { hideError(); });
+    vehicleRadioGroup.addEventListener('change', hideError);
+
+    setDefaultTimes();
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+        hideError(); 
+
+        const userName = document.getElementById('userName').value;
+        const password = document.getElementById('password').value;
+        const destination = document.getElementById('destination').value; 
+        const purpose = document.getElementById('purpose').value; 
+        const vehicle = document.querySelector('input[name="vehicle"]:checked').value;
+        
+        const combinedStartTimeForDB = getCombinedStartString();
+        const combinedEndTimeForDB = getCombinedEndString();
+        const newStartDate = new Date(combinedStartTimeForDB).getTime();
+        const newEndDate = new Date(combinedEndTimeForDB).getTime();
+
+        if(newStartDate >= newEndDate) {
+            showError("⚠️ 예약 등록 실패: 반납 일시가 시작 일시보다 빠르거나 같을 수 없습니다.");
+            return;
+        }
+
+        let isOverlapping = false;
+        let overlapDetails = "";
+        
+        for (let i = 0; i < allReservations.length; i++) {
+            const res = allReservations[i];
+            
+            if (res.vehicle === vehicle) {
+                const existingStart = new Date(res.startTime).getTime();
+                const existingEnd = new Date(res.endTime).getTime();
+
+                if (newStartDate < existingEnd && newEndDate > existingStart) {
+                    isOverlapping = true;
+                    overlapDetails = `[${res.userName}]님의 예약 (${res.startTime.replace('T', ' ')} ~ ${res.endTime.replace('T', ' ')})`;
+                    break;
+                }
+            }
+        }
+
+        if (isOverlapping) {
+            showError(`⚠️ 중복 예약 불가: 해당 차량은 이미 예약되어 있습니다.\n충돌 예약: ${overlapDetails}`);
+            return; 
+        }
+
+        try {
+            await addDoc(collection(db, "reservations"), {
+                userName: userName,
+                password: password,
+                destination: destination,
+                purpose: purpose,
+                vehicle: vehicle,
+                startTime: combinedStartTimeForDB,
+                endTime: combinedEndTimeForDB, 
+                createdAt: new Date()
+            });
+            alert("차량 예약이 완료되었습니다.");
+            
+            form.reset(); 
+            allDayCheck.checked = false; 
+            startTimeInput.readOnly = false;
+            endTimeInput.readOnly = false;
+            startTimeInput.style.backgroundColor = '';
+            endTimeInput.style.backgroundColor = '';
+            
+            setDefaultTimes(); 
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            showError("⚠️ 시스템 오류: 데이터를 저장할 수 없습니다. Firebase 설정을 확인하세요.");
+        }
+    });
+
+    const downloadBtns = document.querySelectorAll('.dl-btn');
+    downloadBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const selectedCar = btn.getAttribute('data-car');
+            const targetMonth = downloadMonthInput.value; 
+            
+            if(!targetMonth) {
+                alert("다운로드할 월을 먼저 선택해주세요.");
+                return;
+            }
+
+            const filteredData = allReservations.filter(res => {
+                return res.vehicle === selectedCar && res.startTime.startsWith(targetMonth);
+            });
+
+            if(filteredData.length === 0) {
+                alert(`선택하신 ${targetMonth}월에는 [${selectedCar}] 운행 내역이 없습니다.`);
+                return;
+            }
+
+            let csvContent = "\uFEFF"; 
+            csvContent += "운행자(예약자),시작 일시,종료 일시,목적지,사용 목적\n"; 
+
+            filteredData.forEach(res => {
+                const s = res.startTime.replace('T', ' ');
+                const e = res.endTime.replace('T', ' ');
+                const user = `"${res.userName}"`;
+                const dest = `"${res.destination}"`;
+                const purp = `"${res.purpose}"`;
+                
+                csvContent += `${user},"${s}","${e}",${dest},${purp}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `운행일지_${selectedCar}_${targetMonth}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+
+    const q = query(collection(db, "reservations"), orderBy("startTime", "asc"));
+    onSnapshot(q, (snapshot) => {
+        allReservations = []; 
+        snapshot.forEach((docSnap) => {
+            allReservations.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        
+        renderCalendar();
+        renderTimeline(); 
+    });
+</script>
+
+</body>
+</html>

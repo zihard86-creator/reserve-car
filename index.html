@@ -32,7 +32,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
-        /* --- 헤더(타이틀 및 링크) 영역 스타일 --- */
+        /* 헤더(타이틀 및 링크) 영역 스타일 */
         .header-container {
             position: relative;
             display: flex;
@@ -45,7 +45,6 @@
             text-align: center;
             color: var(--primary-color);
         }
-        /* 홈 버튼 스타일 추가 */
         .home-link {
             position: absolute;
             left: 0;
@@ -59,10 +58,7 @@
             transition: all 0.2s;
             font-weight: bold;
         }
-        .home-link:hover {
-            background-color: #e2e6ea;
-            color: #333;
-        }
+        .home-link:hover { background-color: #e2e6ea; color: #333; }
         .room-link {
             position: absolute;
             right: 0;
@@ -76,58 +72,25 @@
             transition: all 0.2s;
             font-weight: bold;
         }
-        .room-link:hover {
-            background-color: #e2e6ea;
-            color: #333;
-        }
+        .room-link:hover { background-color: #e2e6ea; color: #333; }
         
         /* 달력(Calendar) 스타일 */
-        .calendar-wrapper {
-            margin-top: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 15px;
-            background-color: #fdfdfd;
-        }
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+        .calendar-wrapper { margin-top: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; padding: 15px; background-color: #fdfdfd; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .calendar-header h2 { margin: 0; font-size: 18px; color: #333; }
-        .calendar-header button {
-            width: 32px; padding: 5px; background-color: #f8f9fa; border: 1px solid #ccc;
-            color: #333; border-radius: 4px; font-weight: bold; cursor: pointer;
-        }
+        .calendar-header button { width: 32px; padding: 5px; background-color: #f8f9fa; border: 1px solid #ccc; color: #333; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .calendar-header button:hover { background-color: #e2e6ea; }
-        
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
         .cal-day-header { font-weight: bold; padding: 6px 0; background-color: #f0f4f8; border-radius: 4px; font-size: 13px; }
         .cal-day-header:first-child { color: var(--error-color); } 
         .cal-day-header:last-child { color: var(--primary-color); } 
-        
         .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 4px; }
-        .cal-cell {
-            min-height: 55px; border: 1px solid #eaeaea; border-radius: 4px; padding: 4px;
-            cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column;
-            align-items: center; background-color: #fff;
-        }
+        .cal-cell { min-height: 55px; border: 1px solid #eaeaea; border-radius: 4px; padding: 4px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; background-color: #fff; }
         .cal-cell.empty { background-color: transparent; border-color: transparent; cursor: default; }
         .cal-cell:not(.empty):hover { background-color: #f1f7fd; border-color: #c6dfeb; }
         .cal-cell.selected { background-color: #e9f2fb; border: 2px solid var(--primary-color); }
-        
-        /* --- 변경됨: 달력 오늘 날짜 하이라이트 스타일 --- */
-        .cal-date-text { 
-            font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #555; 
-            width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%;
-        }
-        .cal-cell.today .cal-date-text {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
+        .cal-date-text { font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #555; width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%; }
+        .cal-cell.today .cal-date-text { background-color: var(--primary-color); color: white; }
         .cal-badges { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
         .cal-badge { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         .badge-car1 { background-color: var(--car1-color); }
@@ -142,16 +105,13 @@
         .timeline-row:last-child { margin-bottom: 0; }
         .vehicle-label-cell { width: 170px; font-weight: bold; font-size: 14px; color: #444; padding-right: 10px; flex-shrink: 0; }
         .timeline-track-cell { flex: 1; position: relative; height: 44px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; box-sizing: border-box; }
-        
         .axis-row { margin-bottom: 8px; }
         .axis-row .vehicle-label-cell { font-size: 12px; color: #777; }
         .axis-track { display: flex; height: auto; background: none; border: none; }
         .axis-track span { flex: 1; text-align: center; font-size: 11px; color: #666; font-weight: bold; }
-
         .bg-grid { display: flex; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         .bg-grid span { flex: 1; border-right: 1px dashed #e9ecef; height: 100%; box-sizing: border-box; }
         .bg-grid span:last-child { border-right: none; }
-
         .blocks-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
         .timeline-block {
             position: absolute; top: 5px; bottom: 5px; background-color: var(--primary-color);
@@ -169,7 +129,6 @@
             padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;
         }
         input[type="text"] { width: 100%; }
-        
         .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .radio-group input[type="radio"] { display: none; }
         .radio-btn {
@@ -181,28 +140,17 @@
         .radio-group input[type="radio"]:checked + .radio-btn {
             background-color: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: bold;
         }
-
         .flex-group { display: flex; align-items: center; gap: 10px; }
         .flex-group input[type="date"], .flex-group input[type="time"] { flex: 1; }
         .flex-group input[type="number"] { width: 80px; text-align: right; }
         .flex-group .name-input { flex: 1; }
         .flex-group .pw-input { width: 140px; }
-        
-        /* 종일 체크박스 라벨 래퍼 */
-        .allday-label {
-            white-space: nowrap; 
-            font-size: 14px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            color: var(--primary-color);
-        }
-
+        .allday-label { white-space: nowrap; font-size: 14px; font-weight: bold; cursor: pointer; color: var(--primary-color); }
         .error-banner {
             display: none; background-color: #f8d7da; color: var(--error-color);
             border: 1px solid #f5c6cb; padding: 12px; border-radius: 4px;
             margin-bottom: 15px; font-weight: bold; font-size: 14px; text-align: center; line-height: 1.5;
         }
-
         button.submit-btn {
             width: 100%; padding: 15px; background-color: var(--primary-color);
             color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold;
@@ -210,20 +158,43 @@
         button.submit-btn:hover { background-color: #004494; }
 
         /* 월간 운행일지 다운로드 영역 스타일 */
-        .download-section {
-            margin-top: 50px;
-            padding: 25px;
-            background-color: #fdfdfd;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
+        .download-section { margin-top: 50px; padding: 25px; background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 8px; }
         .download-section h2 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #333; text-align: left; }
         .download-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        .dl-btn {
-            background-color: var(--download-color); color: white; border: none;
-            padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s;
-        }
+        .dl-btn { background-color: var(--download-color); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; }
         .dl-btn:hover { background-color: #146c43; }
+
+        /* 간편 시간 추가 버튼 */
+        .quick-time-btns { display: flex; gap: 8px; margin-top: 8px; }
+        .q-btn {
+            background-color: #f1f3f5; border: 1px solid #ced4da; border-radius: 4px;
+            padding: 6px 15px; font-size: 13px; font-weight: bold; color: #495057; cursor: pointer; transition: 0.2s;
+        }
+        .q-btn:hover { background-color: #e2e6ea; border-color: #dae0e5; color: #212529; }
+
+        /* 팝업 모달(공지 복사 / 취소용) 스타일 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
+            z-index: 9999; display: none; /* 기본 숨김 */
+        }
+        .modal-box {
+            background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .modal-box h3 { margin-top: 0; margin-bottom: 15px; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; }
+        .modal-content-text { font-size: 14px; line-height: 1.6; margin-bottom: 25px; color: #444; }
+        .modal-btn-group { display: flex; gap: 10px; }
+        .modal-btn {
+            flex: 1; padding: 12px; border: none; border-radius: 4px;
+            font-size: 14px; font-weight: bold; cursor: pointer; color: #fff; transition: 0.2s;
+        }
+        .btn-copy { background-color: #0d6efd; }
+        .btn-copy:hover { background-color: #0b5ed7; }
+        .btn-cancel { background-color: var(--error-color); }
+        .btn-cancel:hover { background-color: #bd2130; }
+        .btn-close { background-color: #6c757d; }
+        .btn-close:hover { background-color: #5a6268; }
     </style>
 </head>
 <body>
@@ -256,15 +227,14 @@
             <div class="cal-day-header">금</div>
             <div class="cal-day-header">토</div>
         </div>
-        <div class="calendar-days" id="calendarDays">
-            </div>
+        <div class="calendar-days" id="calendarDays"></div>
     </div>
     
     <div class="reservation-list">
         <h2 id="timelineTitle">선택일자 24시간 예약 현황</h2>
         <p style="text-align: center; color: #666; font-size: 14px; margin-top: -10px; margin-bottom: 20px;">
             ※ 위 달력에서 날짜를 클릭하시면 해당 일자의 타임라인이 표시됩니다.<br>
-            ※ 예약 블록을 <b>클릭</b>하시면 비밀번호 확인 후 취소할 수 있습니다.
+            ※ 예약 블록을 <b>클릭</b>하시면 <b>내용 복사</b> 및 <b>예약 취소</b>가 가능합니다.
         </p>
         
         <div class="timeline-container">
@@ -365,6 +335,11 @@
                     <input type="checkbox" style="margin: 0; vertical-align: middle;"> 종일
                 </span>
             </div>
+            <div class="quick-time-btns">
+                <button type="button" class="q-btn" id="btnAdd30m">+30분</button>
+                <button type="button" class="q-btn" id="btnAdd1h">+1시간</button>
+                <button type="button" class="q-btn" id="btnAdd1d">+1일</button>
+            </div>
         </div>
 
         <div id="errorBanner" class="error-banner"></div>
@@ -380,6 +355,19 @@
             <button type="button" class="dl-btn" data-car="1톤(6891)">1톤(6891)</button>
             <button type="button" class="dl-btn" data-car="1톤(7539)">1톤(7539)</button>
             <button type="button" class="dl-btn" data-car="3.5톤">3.5톤</button>
+        </div>
+    </div>
+</div>
+
+<div id="resModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>예약 확인 및 관리</h3>
+        <div id="modalContent" class="modal-content-text">
+            </div>
+        <div class="modal-btn-group">
+            <button type="button" id="btnModalCopy" class="modal-btn btn-copy">공지 복사</button>
+            <button type="button" id="btnModalCancel" class="modal-btn btn-cancel">예약 취소</button>
+            <button type="button" id="btnModalClose" class="modal-btn btn-close">닫기</button>
         </div>
     </div>
 </div>
@@ -415,7 +403,11 @@
     
     let allReservations = []; 
     let currentCalDate = new Date(); 
+    
+    // 모달 상태 관리를 위한 변수
+    let selectedReservation = null;
 
+    // --- 예약 취소 로직 ---
     window.cancelReservation = async function(id, userName, correctPassword) {
         const inputPw = prompt(`[${userName}]님의 예약을 취소합니다.\n예약 시 설정한 비밀번호 4자리를 입력해주세요.`);
         if (inputPw === null || inputPw.trim() === "") return;
@@ -479,6 +471,34 @@
         renderCalendar();
     }
 
+    // --- 간편 시간 추가 로직 ---
+    function addQuickTime(value, unit) {
+        if (!endDateInput.value || !endTimeInput.value) return;
+        
+        let currentEnd = new Date(`${endDateInput.value}T${endTimeInput.value}`);
+        if (isNaN(currentEnd.getTime())) return;
+
+        if (unit === 'minute') currentEnd.setMinutes(currentEnd.getMinutes() + value);
+        if (unit === 'hour') currentEnd.setHours(currentEnd.getHours() + value);
+        if (unit === 'day') currentEnd.setDate(currentEnd.getDate() + value);
+
+        const ey = currentEnd.getFullYear();
+        const em = String(currentEnd.getMonth() + 1).padStart(2, '0');
+        const ed = String(currentEnd.getDate()).padStart(2, '0');
+        const eh = String(currentEnd.getHours()).padStart(2, '0');
+        const emin = String(currentEnd.getMinutes()).padStart(2, '0');
+
+        endDateInput.value = `${ey}-${em}-${ed}`;
+        endTimeInput.value = `${eh}:${emin}`;
+        
+        hideError();
+    }
+
+    document.getElementById('btnAdd30m').addEventListener('click', () => addQuickTime(30, 'minute'));
+    document.getElementById('btnAdd1h').addEventListener('click', () => addQuickTime(1, 'hour'));
+    document.getElementById('btnAdd1d').addEventListener('click', () => addQuickTime(1, 'day'));
+
+    // --- 종일 체크박스 이벤트 ---
     allDayCheck.addEventListener('change', (e) => {
         if (e.target.checked) {
             startTimeInput.value = '00:00';
@@ -524,7 +544,6 @@
         
         const selectedDateStr = startDateInput.value; 
         
-        // --- 변경됨: 실제 '오늘' 날짜를 확인하기 위한 로직 ---
         const todayObj = new Date();
         const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
@@ -535,7 +554,7 @@
         for(let i = 1; i <= lastDate; i++) {
             const cellDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
             const isSelected = (selectedDateStr === cellDateStr) ? 'selected' : '';
-            const isToday = (todayStr === cellDateStr) ? 'today' : ''; // 오늘 여부 확인
+            const isToday = (todayStr === cellDateStr) ? 'today' : ''; 
             
             let cellHtml = `<div class="cal-cell ${isSelected} ${isToday}" data-date="${cellDateStr}">
                                 <div class="cal-date-text">${i}</div>
@@ -628,16 +647,56 @@
 
                 const sText = res.startTime.replace('T', ' ');
                 const eText = res.endTime.replace('T', ' ');
-                block.title = `[클릭하여 예약 취소]\n예약자: ${res.userName}\n차량: ${res.vehicle}\n기간: ${sText} ~ ${eText}`;
+                block.title = `[클릭하여 상세/복사/취소]\n예약자: ${res.userName}\n차량: ${res.vehicle}\n기간: ${sText} ~ ${eText}`;
 
+                // --- 블록 클릭 시 상세 팝업 오픈 로직 ---
                 block.addEventListener('click', () => {
-                    window.cancelReservation(res.id, res.userName, res.password);
+                    selectedReservation = res;
+                    const cHtml = `
+                        <p><strong>차량번호:</strong> ${res.vehicle}</p>
+                        <p><strong>사용자:</strong> ${res.userName}</p>
+                        <p><strong>사용일시:</strong> ${sText} ~ ${eText}</p>
+                        <p><strong>목적지:</strong> ${res.destination}</p>
+                        <p><strong>목적:</strong> ${res.purpose}</p>
+                    `;
+                    document.getElementById('modalContent').innerHTML = cHtml;
+                    document.getElementById('resModal').style.display = 'flex';
                 });
 
                 overlay.appendChild(block);
             }
         });
     }
+
+    // --- 팝업 모달창 버튼 이벤트 ---
+    document.getElementById('btnModalClose').addEventListener('click', () => {
+        document.getElementById('resModal').style.display = 'none';
+        selectedReservation = null;
+    });
+
+    document.getElementById('btnModalCancel').addEventListener('click', () => {
+        if (!selectedReservation) return;
+        // 취소 진행 시 모달창을 닫고 원래의 취소 로직 실행
+        document.getElementById('resModal').style.display = 'none';
+        window.cancelReservation(selectedReservation.id, selectedReservation.userName, selectedReservation.password);
+        selectedReservation = null;
+    });
+
+    document.getElementById('btnModalCopy').addEventListener('click', () => {
+        if (!selectedReservation) return;
+        
+        const sText = selectedReservation.startTime.replace('T', ' ');
+        const eText = selectedReservation.endTime.replace('T', ' ');
+        
+        // --- 변경됨: 목적지가 공지 텍스트에 포함되도록 추가 ---
+        const copyText = `[차량 예약 공지]\n차량번호: ${selectedReservation.vehicle}\n사용자: ${selectedReservation.userName}\n사용일시: ${sText} ~ ${eText}\n목적지: ${selectedReservation.destination}`;
+
+        navigator.clipboard.writeText(copyText).then(() => {
+            alert("공지 내용이 클립보드에 복사되었습니다. (Ctrl+V 로 붙여넣기 하세요)");
+        }).catch(err => {
+            alert("자동 복사에 실패했습니다.\n\n아래 텍스트를 직접 드래그하여 복사해주세요.\n\n" + copyText);
+        });
+    });
 
     startDateInput.addEventListener('input', () => { 
         hideError(); 

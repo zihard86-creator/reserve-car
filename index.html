@@ -15,6 +15,7 @@
             --car3-color: #17a2b8;
             --car4-color: #fd7e14;
             --download-color: #198754;
+            --edit-color: #ffc107;
         }
         body {
             font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
@@ -151,20 +152,28 @@
             border: 1px solid #f5c6cb; padding: 12px; border-radius: 4px;
             margin-bottom: 15px; font-weight: bold; font-size: 14px; text-align: center; line-height: 1.5;
         }
+        
+        /* 등록/수정/취소 버튼 */
+        .btn-wrapper { display: flex; gap: 10px; }
         button.submit-btn {
             width: 100%; padding: 15px; background-color: var(--primary-color);
-            color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold;
+            color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.2s;
         }
         button.submit-btn:hover { background-color: #004494; }
+        button.cancel-edit-btn {
+            display: none; width: 30%; padding: 15px; background-color: #6c757d;
+            color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        button.cancel-edit-btn:hover { background-color: #5a6268; }
 
-        /* 월간 운행일지 다운로드 영역 스타일 */
+        /* 다운로드 영역 */
         .download-section { margin-top: 50px; padding: 25px; background-color: #fdfdfd; border: 1px solid #ddd; border-radius: 8px; }
         .download-section h2 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #333; text-align: left; }
         .download-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .dl-btn { background-color: var(--download-color); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; }
         .dl-btn:hover { background-color: #146c43; }
 
-        /* 간편 시간 추가 버튼 */
+        /* 간편 시간 버튼 */
         .quick-time-btns { display: flex; gap: 8px; margin-top: 8px; }
         .q-btn {
             background-color: #f1f3f5; border: 1px solid #ced4da; border-radius: 4px;
@@ -172,7 +181,7 @@
         }
         .q-btn:hover { background-color: #e2e6ea; border-color: #dae0e5; color: #212529; }
 
-        /* 팝업 모달(상세 / 취소용) 스타일 */
+        /* 팝업 모달 */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
@@ -186,9 +195,11 @@
         .modal-content-text { font-size: 14px; line-height: 1.6; margin-bottom: 25px; color: #444; }
         .modal-btn-group { display: flex; gap: 10px; }
         .modal-btn {
-            flex: 1; padding: 12px; border: none; border-radius: 4px;
-            font-size: 14px; font-weight: bold; cursor: pointer; color: #fff; transition: 0.2s;
+            flex: 1; padding: 12px 5px; border: none; border-radius: 4px;
+            font-size: 14px; font-weight: bold; cursor: pointer; color: #fff; transition: 0.2s; text-align: center;
         }
+        .btn-edit { background-color: var(--edit-color); color: #000; }
+        .btn-edit:hover { background-color: #e0a800; }
         .btn-cancel { background-color: var(--error-color); }
         .btn-cancel:hover { background-color: #bd2130; }
         .btn-close { background-color: #6c757d; }
@@ -232,7 +243,7 @@
         <h2 id="timelineTitle">선택일자 24시간 예약 현황</h2>
         <p style="text-align: center; color: #666; font-size: 14px; margin-top: -10px; margin-bottom: 20px;">
             ※ 위 달력에서 날짜를 클릭하시면 해당 일자의 타임라인이 표시됩니다.<br>
-            ※ 예약 블록(이름)을 <b>클릭</b>하시면 <b>자동으로 공지가 복사</b>되며 상세/취소 창이 열립니다.
+            ※ 예약 블록(이름)을 <b>클릭</b>하시면 <b>자동으로 공지가 복사</b>되며 상세/수정 창이 열립니다.
         </p>
         
         <div class="timeline-container">
@@ -282,7 +293,7 @@
     <h2>새로운 예약 등록</h2>
     <form id="reservationForm">
         <div class="form-group">
-            <label class="section-label">예약자 성명 및 취소 비밀번호</label>
+            <label class="section-label">예약자 성명 및 취소/수정 비밀번호</label>
             <div class="flex-group">
                 <input type="text" id="userName" class="name-input" placeholder="이름을 입력하세요" required>
                 <input type="password" id="password" class="pw-input" placeholder="비밀번호 4자리" maxlength="4" pattern="\d{4}" title="숫자 4자리를 입력하세요" required>
@@ -342,7 +353,10 @@
 
         <div id="errorBanner" class="error-banner"></div>
 
-        <button type="submit" class="submit-btn">예약 등록하기</button>
+        <div class="btn-wrapper">
+            <button type="submit" class="submit-btn" id="mainSubmitBtn">예약 등록하기</button>
+            <button type="button" class="cancel-edit-btn" id="btnCancelEdit">수정 취소</button>
+        </div>
     </form>
 
     <div class="download-section">
@@ -363,6 +377,7 @@
         <div id="modalContent" class="modal-content-text">
             </div>
         <div class="modal-btn-group">
+            <button type="button" id="btnModalEdit" class="modal-btn btn-edit">예약 수정</button>
             <button type="button" id="btnModalCancel" class="modal-btn btn-cancel">예약 취소</button>
             <button type="button" id="btnModalClose" class="modal-btn btn-close">닫기</button>
         </div>
@@ -371,7 +386,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBRwg3k5usuMkBXH9LB6T-9Uuw9ZU1TBMs",
@@ -401,12 +416,14 @@
     let allReservations = []; 
     let currentCalDate = new Date(); 
     let selectedReservation = null;
+    let editingId = null; 
 
+    // 예약 취소 로직 (레거시/직접 호출용)
     window.cancelReservation = async function(id, userName, correctPassword) {
-        const inputPw = prompt(`[${userName}]님의 예약을 취소합니다.\n예약 시 설정한 비밀번호 4자리를 입력해주세요.`);
+        const inputPw = prompt(`[${userName}]님의 예약을 취소합니다.\n비밀번호 4자리(또는 마스터 비밀번호)를 입력해주세요.`);
         if (inputPw === null || inputPw.trim() === "") return;
 
-        if (inputPw === correctPassword) {
+        if (inputPw === correctPassword || inputPw === "140916") {
             if (confirm(`비밀번호가 일치합니다.\n정말 예약을 취소하시겠습니까?`)) {
                 try {
                     await deleteDoc(doc(db, "reservations", id));
@@ -483,7 +500,6 @@
 
         endDateInput.value = `${ey}-${em}-${ed}`;
         endTimeInput.value = `${eh}:${emin}`;
-        
         hideError();
     }
 
@@ -525,15 +541,12 @@
     function renderCalendar() {
         const year = currentCalDate.getFullYear();
         const month = currentCalDate.getMonth();
-        
         document.getElementById('calendarMonthText').innerText = `${year}년 ${month + 1}월`;
         
         const firstDay = new Date(year, month, 1).getDay(); 
         const lastDate = new Date(year, month + 1, 0).getDate(); 
-        
         const calendarDays = document.getElementById('calendarDays');
         calendarDays.innerHTML = '';
-        
         const selectedDateStr = startDateInput.value; 
         
         const todayObj = new Date();
@@ -570,7 +583,6 @@
                 else if(v.includes('6891')) badgeClass = 'badge-car2';
                 else if(v.includes('7539')) badgeClass = 'badge-car3';
                 else if(v.includes('3.5톤')) badgeClass = 'badge-car4';
-                
                 cellHtml += `<span class="cal-badge ${badgeClass}" title="${v}"></span>`;
             });
 
@@ -582,7 +594,6 @@
             cell.addEventListener('click', function() {
                 const clickedDate = this.getAttribute('data-date');
                 startDateInput.value = clickedDate; 
-                
                 hideError();
                 renderTimeline(); 
                 renderCalendar(); 
@@ -590,14 +601,8 @@
         });
     }
 
-    document.getElementById('prevMonthBtn').addEventListener('click', () => {
-        currentCalDate.setMonth(currentCalDate.getMonth() - 1);
-        renderCalendar();
-    });
-    document.getElementById('nextMonthBtn').addEventListener('click', () => {
-        currentCalDate.setMonth(currentCalDate.getMonth() + 1);
-        renderCalendar();
-    });
+    document.getElementById('prevMonthBtn').addEventListener('click', () => { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); });
+    document.getElementById('nextMonthBtn').addEventListener('click', () => { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); });
     
     function renderTimeline() {
         const selectedDateStr = startDateInput.value; 
@@ -641,20 +646,16 @@
                 const eText = res.endTime.replace('T', ' ');
                 block.title = `[클릭하여 공지 복사 및 상세 확인]\n예약자: ${res.userName}\n차량: ${res.vehicle}\n기간: ${sText} ~ ${eText}`;
 
-                // --- 수정됨: 블록(이름) 클릭 시 자동 복사 및 안내 모달 출력 ---
                 block.addEventListener('click', () => {
                     selectedReservation = res;
                     
                     const copyText = `[차량 예약 공지]\n차량번호: ${res.vehicle}\n사용자: ${res.userName}\n사용일시: ${sText} ~ ${eText}\n목적지: ${res.destination}`;
 
-                    // 클립보드 자동 복사 실행 (크로스 브라우징)
                     const textArea = document.createElement("textarea");
                     textArea.value = copyText;
                     textArea.style.position = "fixed";
                     textArea.style.left = "-999999px";
-                    textArea.style.top = "-999999px";
                     document.body.appendChild(textArea);
-                    
                     textArea.focus();
                     textArea.select();
                     textArea.setSelectionRange(0, 99999);
@@ -668,7 +669,6 @@
                     }
                     document.body.removeChild(textArea);
 
-                    // 복사 성공 여부에 따른 모달창 내 안내 메시지 생성
                     const copyMsgHtml = copySuccess 
                         ? `<div style="background:#d1e7dd; color:#0f5132; padding:10px; border-radius:4px; margin-bottom:15px; font-weight:bold; text-align:center; font-size:13px;">✅ 공지 내용이 클립보드에 자동으로 복사되었습니다.<br>(메신저에 Ctrl+V 로 붙여넣기 하세요)</div>`
                         : `<div style="background:#f8d7da; color:#842029; padding:10px; border-radius:4px; margin-bottom:15px; font-weight:bold; text-align:center; font-size:13px;">⚠️ 자동 복사에 실패했습니다. 내용을 직접 드래그하여 복사해주세요.</div>`;
@@ -696,11 +696,107 @@
         selectedReservation = null;
     });
 
-    document.getElementById('btnModalCancel').addEventListener('click', () => {
+    // --- 예약 수정 로직 (마스터 비밀번호 적용) ---
+    document.getElementById('btnModalEdit').addEventListener('click', () => {
         if (!selectedReservation) return;
-        document.getElementById('resModal').style.display = 'none';
-        window.cancelReservation(selectedReservation.id, selectedReservation.userName, selectedReservation.password);
-        selectedReservation = null;
+
+        const inputPw = prompt(`[${selectedReservation.userName}]님의 예약을 수정합니다.\n비밀번호 4자리(또는 마스터 비밀번호)를 입력해주세요.`);
+        if (inputPw === null || inputPw.trim() === "") return;
+
+        if (inputPw === selectedReservation.password || inputPw === "140916") {
+            document.getElementById('userName').value = selectedReservation.userName;
+            document.getElementById('password').value = selectedReservation.password;
+            document.getElementById('destination').value = selectedReservation.destination;
+            document.getElementById('purpose').value = selectedReservation.purpose;
+
+            const radios = document.getElementsByName('vehicle');
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].value === selectedReservation.vehicle) {
+                    radios[i].checked = true;
+                    break;
+                }
+            }
+
+            const [startD, startT] = selectedReservation.startTime.split('T');
+            document.getElementById('startDate').value = startD;
+            document.getElementById('startTime').value = startT;
+
+            const [endD, endT] = selectedReservation.endTime.split('T');
+            document.getElementById('endDate').value = endD;
+            document.getElementById('endTime').value = endT;
+
+            document.getElementById('resModal').style.display = 'none';
+            editingId = selectedReservation.id;
+            
+            const submitBtn = document.getElementById('mainSubmitBtn');
+            submitBtn.innerText = "🔄 예약 수정 완료하기";
+            submitBtn.style.backgroundColor = "var(--edit-color)";
+            submitBtn.style.color = "#000";
+            submitBtn.style.width = "70%";
+            
+            document.getElementById('btnCancelEdit').style.display = "block";
+            document.getElementById('reservationForm').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            alert("비밀번호가 일치하지 않습니다.");
+        }
+    });
+
+    // --- 예약 취소 로직 (시간제한 및 마스터 비밀번호 적용) ---
+    document.getElementById('btnModalCancel').addEventListener('click', async () => {
+        if (!selectedReservation) return;
+
+        const now = new Date();
+        const resStartTime = new Date(selectedReservation.startTime);
+
+        if (now >= resStartTime) {
+            const adminPw = prompt(`⚠️ 이미 운행 시간이 지나 일반 삭제가 제한됩니다.\n강제 삭제를 위해 [관리자 비밀번호]를 입력하세요.`);
+            if (adminPw === null || adminPw.trim() === "") return;
+
+            if (adminPw === "140916") {
+                if (confirm(`관리자 권한이 확인되었습니다.\n정말 예약을 강제 삭제하시겠습니까?`)) {
+                    try {
+                        await deleteDoc(doc(db, "reservations", selectedReservation.id));
+                        alert("관리자 권한으로 삭제되었습니다.");
+                        document.getElementById('resModal').style.display = 'none';
+                        selectedReservation = null;
+                    } catch (error) {
+                        alert("삭제 중 오류가 발생했습니다.");
+                    }
+                }
+            } else {
+                alert("관리자 비밀번호가 일치하지 않습니다.");
+            }
+        } else {
+            const inputPw = prompt(`[${selectedReservation.userName}]님의 예약을 취소합니다.\n비밀번호 4자리(또는 마스터 비밀번호)를 입력해주세요.`);
+            if (inputPw === null || inputPw.trim() === "") return;
+
+            if (inputPw === selectedReservation.password || inputPw === "140916") {
+                if (confirm(`비밀번호가 일치합니다.\n정말 예약을 취소하시겠습니까?`)) {
+                    try {
+                        await deleteDoc(doc(db, "reservations", selectedReservation.id));
+                        alert("예약이 정상적으로 취소되었습니다.");
+                        document.getElementById('resModal').style.display = 'none';
+                        selectedReservation = null;
+                    } catch (error) {
+                        alert("예약 취소 중 오류가 발생했습니다.");
+                    }
+                }
+            } else {
+                alert("비밀번호가 일치하지 않습니다.");
+            }
+        }
+    });
+
+    document.getElementById('btnCancelEdit').addEventListener('click', () => {
+        form.reset();
+        editingId = null;
+        const submitBtn = document.getElementById('mainSubmitBtn');
+        submitBtn.innerText = "예약 등록하기";
+        submitBtn.style.backgroundColor = "var(--primary-color)";
+        submitBtn.style.color = "white";
+        submitBtn.style.width = "100%";
+        document.getElementById('btnCancelEdit').style.display = "none";
+        setDefaultTimes();
     });
 
     startDateInput.addEventListener('input', () => { 
@@ -736,7 +832,7 @@
         const newEndDate = new Date(combinedEndTimeForDB).getTime();
 
         if(newStartDate >= newEndDate) {
-            showError("⚠️ 예약 등록 실패: 반납 일시가 시작 일시보다 빠르거나 같을 수 없습니다.");
+            showError("⚠️ 예약 실패: 반납 일시가 시작 일시보다 빠르거나 같을 수 없습니다.");
             return;
         }
 
@@ -745,6 +841,7 @@
         
         for (let i = 0; i < allReservations.length; i++) {
             const res = allReservations[i];
+            if (editingId && res.id === editingId) continue;
             
             if (res.vehicle === vehicle) {
                 const existingStart = new Date(res.startTime).getTime();
@@ -764,17 +861,30 @@
         }
 
         try {
-            await addDoc(collection(db, "reservations"), {
-                userName: userName,
-                password: password,
-                destination: destination,
-                purpose: purpose,
-                vehicle: vehicle,
-                startTime: combinedStartTimeForDB,
-                endTime: combinedEndTimeForDB, 
-                createdAt: new Date()
-            });
-            alert("차량 예약이 완료되었습니다.");
+            if (editingId) {
+                await updateDoc(doc(db, "reservations", editingId), {
+                    userName: userName,
+                    password: password,
+                    destination: destination,
+                    purpose: purpose,
+                    vehicle: vehicle,
+                    startTime: combinedStartTimeForDB,
+                    endTime: combinedEndTimeForDB
+                });
+                alert("차량 예약이 성공적으로 수정되었습니다.");
+            } else {
+                await addDoc(collection(db, "reservations"), {
+                    userName: userName,
+                    password: password,
+                    destination: destination,
+                    purpose: purpose,
+                    vehicle: vehicle,
+                    startTime: combinedStartTimeForDB,
+                    endTime: combinedEndTimeForDB, 
+                    createdAt: new Date()
+                });
+                alert("차량 예약이 완료되었습니다.");
+            }
             
             form.reset(); 
             allDayCheck.checked = false; 
@@ -783,6 +893,14 @@
             startTimeInput.style.backgroundColor = '';
             endTimeInput.style.backgroundColor = '';
             
+            editingId = null;
+            const submitBtn = document.getElementById('mainSubmitBtn');
+            submitBtn.innerText = "예약 등록하기";
+            submitBtn.style.backgroundColor = "var(--primary-color)";
+            submitBtn.style.color = "white";
+            submitBtn.style.width = "100%";
+            document.getElementById('btnCancelEdit').style.display = "none";
+
             setDefaultTimes(); 
         } catch (error) {
             console.error("Error adding document: ", error);
